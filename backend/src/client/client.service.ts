@@ -7,12 +7,22 @@ export class ClientService {
     @Inject('PrismaClient') private readonly prisma: PrismaClient,
   ) {}
 
-  async getClients() {
-    return this.prisma.client.findMany();
+  async getClients(userId: number) {
+    return this.prisma.client.findMany({
+      where: { userId },
+    });
   }
 
-  async createClient(data: { name: string; email: string; phone?: string }) {
-    return this.prisma.client.create({ data });
+  async createClient(
+    data: { name: string; email: string; phone?: string },
+    userId: number
+  ) {
+    return this.prisma.client.create({
+      data: {
+        ...data,
+        userId,
+      },
+    });
   }
 
   async updateClient(id: number, data: { name?: string; email?: string; phone?: string }) {
@@ -27,6 +37,4 @@ export class ClientService {
       where: { id },
     });
   }
-
-
 }

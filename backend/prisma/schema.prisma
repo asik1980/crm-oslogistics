@@ -1,6 +1,5 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -8,13 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Client {
+model User {
   id        Int      @id @default(autoincrement())
-  name      String
   email     String   @unique
-  phone     String?
-  createdAt DateTime @default(now())
+  password  String
+  firstName String?
+  lastName  String?
+  clients   Client[]
 }
 
+model Client {
+  id             Int       @id @default(autoincrement())
+  name           String
+  city           String?
+  zipCode        String?
+  address        String?
+  nip            String?
+  website        String?
+  email          String?
+  phone          String?
+  interestedFCL  Boolean   @default(false)
+  interestedLCL  Boolean   @default(false)
+  interestedAIR  Boolean   @default(false)
+  isImporter     Boolean   @default(false)
+  isExporter     Boolean   @default(false)
+  fromChina      Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  userId         Int
+  user           User      @relation(fields: [userId], references: [id])
+  contacts       Contact[]
+}
 
-
+model Contact {
+  id        Int     @id @default(autoincrement())
+  clientId  Int
+  client    Client  @relation(fields: [clientId], references: [id])
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+}

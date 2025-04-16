@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `Client` ADD COLUMN `email` VARCHAR(191) NULL,
+    ADD COLUMN `phone` VARCHAR(191) NULL,
+    ALTER COLUMN `updatedAt` DROP DEFAULT,
+    ALTER COLUMN `userId` DROP DEFAULT;
