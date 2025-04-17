@@ -1,31 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import axios from 'axios'
 
-const API_URL = 'http://localhost:3000/clients'
-
-const ClientList = () => {
-  const [clients, setClients] = useState([])
-
-  const fetchClients = () => {
-    axios.get(API_URL)
-      .then(res => {
-        console.log('Dane z backendu:', res.data)
-        setClients(res.data)
-      })
-      .catch(err => {
-        console.error('Błąd pobierania klientów:', err)
-      })
-  }
-
-  useEffect(() => {
-    fetchClients()
-  }, [])
-
+const ClientList = ({ clients = [], onDelete }) => {
   const handleDelete = async (id) => {
     if (confirm('Czy na pewno chcesz usunąć tego klienta?')) {
       try {
-        await axios.delete(`${API_URL}/${id}`)
-        fetchClients()
+        await axios.delete(`http://localhost:3000/clients/${id}`)
+        if (onDelete) onDelete()
       } catch (err) {
         console.error('Błąd przy usuwaniu klienta:', err)
       }
@@ -38,6 +19,7 @@ const ClientList = () => {
         <thead className="bg-gray-100">
           <tr>
             <th className="border px-4 py-2">Firma</th>
+            <th className="border px-4 py-2">Opiekun</th>
             <th className="border px-4 py-2">Miasto</th>
             <th className="border px-4 py-2">Kod / Adres</th>
             <th className="border px-4 py-2">NIP</th>
@@ -52,6 +34,9 @@ const ClientList = () => {
           {clients.map(client => (
             <tr key={client.id} className="border-b hover:bg-gray-50">
               <td className="border px-4 py-2 font-semibold">{client.name}</td>
+              <td className="border px-4 py-2">
+                {client.user?.firstName} {client.user?.lastName}
+              </td>
               <td className="border px-4 py-2">{client.city}</td>
               <td className="border px-4 py-2">{client.zipCode} <br /> {client.address}</td>
               <td className="border px-4 py-2">{client.nip}</td>

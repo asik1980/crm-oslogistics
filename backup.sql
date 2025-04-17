@@ -41,7 +41,7 @@ CREATE TABLE `_prisma_migrations` (
 
 LOCK TABLES `_prisma_migrations` WRITE;
 /*!40000 ALTER TABLE `_prisma_migrations` DISABLE KEYS */;
-INSERT INTO `_prisma_migrations` VALUES ('95477b3f-ee8d-4e52-a067-aaac25622cb4','f4232e2bbec7f787f6be6b940b9646c86dd67ba7f9aa35905836e71d894796a4','2025-04-16 13:02:55.927','20250414125626_add_user_model',NULL,NULL,'2025-04-16 13:02:55.726',1),('9d5b0175-3d96-4d8c-b650-748759ec7a53','6aff9a09363acec7fce0d42fc51b2dd72cabaa1eb791fe9f88bfeb6e5d0ccdc1','2025-04-16 13:35:04.789','20250416133504_add_email_phone',NULL,NULL,'2025-04-16 13:35:04.734',1),('a3b38ea7-338a-4c5c-8756-4cf3cac459a1','4c1a639b8b7baeffd736cd91f7b510a89511e28db9c3a1a0b0ea2b7f87191bbb','2025-04-16 13:02:55.717','20250406091115_init',NULL,NULL,'2025-04-16 13:02:55.680',1);
+INSERT INTO `_prisma_migrations` VALUES ('48c0cb82-2c0a-45c8-b532-5d2c470ca608','df5c11895b10d49c40a810ec2ffc9735f586674c1d3a3983afe407ffda8b5e9b','2025-04-17 12:00:20.427','20250417120020_add_phone_to_user',NULL,NULL,'2025-04-17 12:00:20.405',1),('95477b3f-ee8d-4e52-a067-aaac25622cb4','f4232e2bbec7f787f6be6b940b9646c86dd67ba7f9aa35905836e71d894796a4','2025-04-16 13:02:55.927','20250414125626_add_user_model',NULL,NULL,'2025-04-16 13:02:55.726',1),('9d5b0175-3d96-4d8c-b650-748759ec7a53','6aff9a09363acec7fce0d42fc51b2dd72cabaa1eb791fe9f88bfeb6e5d0ccdc1','2025-04-16 13:35:04.789','20250416133504_add_email_phone',NULL,NULL,'2025-04-16 13:35:04.734',1),('a3b38ea7-338a-4c5c-8756-4cf3cac459a1','4c1a639b8b7baeffd736cd91f7b510a89511e28db9c3a1a0b0ea2b7f87191bbb','2025-04-16 13:02:55.717','20250406091115_init',NULL,NULL,'2025-04-16 13:02:55.680',1);
 /*!40000 ALTER TABLE `_prisma_migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -74,7 +74,7 @@ CREATE TABLE `Client` (
   PRIMARY KEY (`id`),
   KEY `Client_userId_fkey` (`userId`),
   CONSTRAINT `Client_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,7 +83,7 @@ CREATE TABLE `Client` (
 
 LOCK TABLES `Client` WRITE;
 /*!40000 ALTER TABLE `Client` DISABLE KEYS */;
-INSERT INTO `Client` VALUES (1,'OS Logistics','2025-04-16 13:44:26.458','Kapitańska 47a','Gdynia',1,0,1,1,0,1,'5862282298','2025-04-16 13:44:26.458',1,'www.oslogistics.pl','81-249','info@oslogistics.pl','720882884');
+INSERT INTO `Client` VALUES (1,'OS Logistics','2025-04-16 13:44:26.458','Kapitańska 47a','Gdynia',1,0,1,1,0,1,'5862282298','2025-04-16 13:44:26.458',1,'www.oslogistics.pl','81-249','info@oslogistics.pl','720882884'),(3,'Project','2025-04-17 10:21:13.582','aa','Gdynia',0,1,0,0,1,0,'9581361163','2025-04-17 10:21:13.582',1,'aa','81-578','a.sawicki@projectas.pl','720111222');
 /*!40000 ALTER TABLE `Client` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -129,9 +129,11 @@ CREATE TABLE `User` (
   `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `firstName` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `lastName` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `role` enum('ADMIN','HANDLOWIEC') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'HANDLOWIEC',
   PRIMARY KEY (`id`),
   UNIQUE KEY `User_email_key` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +142,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (1,'admin@example.com','123456','Adrian','Sawicki');
+INSERT INTO `User` VALUES (1,'admin@example.com','123456','Adrian','Sawicki',NULL,'ADMIN'),(4,'ewa@firma.pl','123456','Ewa','Handlowa','790000000','HANDLOWIEC');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -153,4 +155,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-16 13:55:48
+-- Dump completed on 2025-04-17 14:06:24

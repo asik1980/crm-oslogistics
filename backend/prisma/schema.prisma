@@ -13,7 +13,14 @@ model User {
   password  String
   firstName String?
   lastName  String?
+  phone     String?  // ✅ nowość
+  role      Role     @default(HANDLOWIEC) // ✅ zaktualizowana rola
   clients   Client[]
+}
+
+enum Role {
+  ADMIN
+  HANDLOWIEC
 }
 
 model Client {

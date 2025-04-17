@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import LoginForm from './components/LoginForm'
-import ClientList from './components/ClientList'
-import ClientForm from './components/ClientForm'
+import ClientsPage from './pages/ClientsPage'
+import Navbar from './components/Navbar'
+
+const Dashboard = () => <div className="p-6 text-xl">📊 Tu będzie dashboard</div>
+const Contacts = () => <div className="p-6 text-xl">👥 Tu będą kontakty</div>
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'))
@@ -20,28 +24,21 @@ function App() {
     setRefreshFlag(prev => prev + 1)
   }
 
+  if (!isLoggedIn) {
+    return <LoginForm onLoginSuccess={handleLoginSuccess} />
+  }
+
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">CRM OS Logistics</h1>
-
-      {isLoggedIn ? (
-        <>
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-              Wyloguj
-            </button>
-          </div>
-
-          <ClientForm onAdded={handleRefreshClients} />
-          <ClientList key={refreshFlag} />
-        </>
-      ) : (
-        <LoginForm onLoginSuccess={handleLoginSuccess} />
-      )}
-    </div>
+    <Router>
+      <Navbar onLogout={handleLogout} />
+      <div className="container mx-auto p-6">
+        <Routes>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/contacts" element={<Contacts />} />
+          <Route path="/" element={<ClientsPage />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 
