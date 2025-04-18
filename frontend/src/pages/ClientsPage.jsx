@@ -29,20 +29,31 @@ const ClientsPage = () => {
 
   const applyFilters = (all, filters) => {
     return all.filter(client => {
-      const textMatch =
-        (!filters.name || client.name?.toLowerCase().includes(filters.name.toLowerCase())) &&
-        (!filters.city || client.city?.toLowerCase().includes(filters.city.toLowerCase())) &&
-        (!filters.nip || client.nip?.toLowerCase().includes(filters.nip.toLowerCase()))
+      const nameMatch = !filters.name || client.name?.toLowerCase().includes(filters.name.toLowerCase())
+      const cityMatch = !filters.city || client.city?.toLowerCase().includes(filters.city.toLowerCase())
+      const nipMatch = !filters.nip || client.nip?.toLowerCase().includes(filters.nip.toLowerCase())
 
-      const checkboxMatch =
-        (!filters.interestedFCL || client.interestedFCL) &&
-        (!filters.interestedLCL || client.interestedLCL) &&
-        (!filters.interestedAIR || client.interestedAIR) &&
-        (!filters.isImporter || client.isImporter) &&
-        (!filters.isExporter || client.isExporter) &&
-        (!filters.fromChina || client.fromChina)
+      const fclMatch = !filters.interestedFCL || client.interestedFCL
+      const lclMatch = !filters.interestedLCL || client.interestedLCL
+      const airMatch = !filters.interestedAIR || client.interestedAIR
+      const importerMatch = !filters.isImporter || client.isImporter
+      const exporterMatch = !filters.isExporter || client.isExporter
+      const fromChinaMatch = !filters.fromChina || client.fromChina
 
-      return textMatch && checkboxMatch
+      const statusMatch = !filters.status || client.status === filters.status
+
+      return (
+        nameMatch &&
+        cityMatch &&
+        nipMatch &&
+        fclMatch &&
+        lclMatch &&
+        airMatch &&
+        importerMatch &&
+        exporterMatch &&
+        fromChinaMatch &&
+        statusMatch
+      )
     })
   }
 

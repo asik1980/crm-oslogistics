@@ -1,5 +1,17 @@
 import React from 'react'
 import axios from 'axios'
+import { jwtDecode } from 'jwt-decode'
+
+const token = localStorage.getItem('token')
+let userRole = ''
+try {
+  if (token) {
+    const decoded = jwtDecode(token)
+    userRole = decoded.role
+  }
+} catch (err) {
+  console.error('Błąd dekodowania tokena:', err)
+}
 
 const ClientList = ({ clients = [], onDelete }) => {
   const handleDelete = async (id) => {
@@ -10,6 +22,20 @@ const ClientList = ({ clients = [], onDelete }) => {
       } catch (err) {
         console.error('Błąd przy usuwaniu klienta:', err)
       }
+    }
+  }
+
+  const handleUpdate = async (id, field, value) => {
+    const token = localStorage.getItem('token')
+    try {
+      await axios.put(`http://localhost:3000/clients/${id}`, { [field]: value }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      if (onDelete) onDelete() // Odśwież listę po zmianie statusu
+    } catch (err) {
+      console.error('Błąd przy aktualizacji klienta:', err)
     }
   }
 
@@ -27,6 +53,7 @@ const ClientList = ({ clients = [], onDelete }) => {
             <th className="border px-4 py-2">Strona www</th>
             <th className="border px-4 py-2">Zainteresowania</th>
             <th className="border px-4 py-2">Tagi</th>
+            <th className="border px-4 py-2">Status</th>
             <th className="border px-4 py-2 text-center">Akcje</th>
           </tr>
         </thead>
@@ -54,6 +81,23 @@ const ClientList = ({ clients = [], onDelete }) => {
                 {client.isImporter && <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded mr-1">Importer</span>}
                 {client.isExporter && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded mr-1">Eksporter</span>}
                 {client.fromChina && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded mr-1">Chiny</span>}
+              </td>
+              <td className="border px-4 py-2">
+                <select
+                  defaultValue={client.status}
+                  onBlur={(e) => userRole === 'ADMIN' && handleUpdate(client.id, 'status', e.target.value)}
+                  disabled={userRole !== 'ADMIN'}
+                  className={`border px-2 py-1 w-full rounded
+                    ${
+                      client.status === 'DOAKCEPTACJI' ? 'bg-yellow-100 text-yellow-800' :
+                      client.status === 'ZATWIERDZONY' ? 'bg-green-100 text-green-800' :
+                      client.status === 'ODRZUCONY' ? 'bg-red-100 text-red-800' : ''
+                    } ${userRole !== 'ADMIN' ? 'opacity-60 cursor-not-allowed' : ''}`}
+                >
+                  <option value="DOAKCEPTACJI">DO AKCEPTACJI</option>
+                  <option value="ZATWIERDZONY">CRM</option>
+                  <option value="ODRZUCONY">ODRZUCONY</option>
+                </select>
               </td>
               <td className="border px-4 py-2 text-center">
                 <button

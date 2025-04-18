@@ -11,6 +11,7 @@ const ClientFilters = ({ onFilter }) => {
     isImporter: false,
     isExporter: false,
     fromChina: false,
+    status: '',
   })
 
   // wysyłamy filtry do rodzica po każdej zmianie
@@ -52,6 +53,17 @@ const ClientFilters = ({ onFilter }) => {
         value={filters.nip}
         onChange={handleChange}
       />
+      <select
+        name="status"
+        value={filters.status}
+        onChange={handleChange}
+        className="border px-4 py-2 rounded"
+      >
+        <option value="">Wszystkie statusy</option>
+        <option value="DOAKCEPTACJI">DO AKCEPTACJI</option>
+        <option value="ZATWIERDZONY">CRM</option>
+        <option value="ODRZUCONY">ODRZUCONY</option>
+      </select>
 
       <div className="col-span-full flex flex-wrap gap-4 mt-2">
         <label><input type="checkbox" name="interestedFCL" checked={filters.interestedFCL} onChange={handleChange} /> FCL</label>

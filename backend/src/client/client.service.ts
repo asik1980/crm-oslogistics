@@ -13,11 +13,16 @@ export class ClientService {
     })
   }
 
-  async createClient(data: any) {
-    return this.prisma.client.create({
-      data,
-    })
-  }
+async createClient(data: any, userId: number) {
+  return this.prisma.client.create({
+    data: {
+      ...data,
+      user: {
+        connect: { id: userId },
+      },
+    },
+  })
+}
 
   async updateClient(id: number, data: any) {
     return this.prisma.client.update({
