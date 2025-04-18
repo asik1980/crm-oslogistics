@@ -26,6 +26,11 @@ const Navbar = ({ onLogout }) => {
           <Link to="/" className="hover:underline">Klienci</Link>
           <Link to="/dashboard" className="hover:underline">Dashboard</Link>
           <Link to="/contacts" className="hover:underline">Kontakty</Link>
+
+          {/* ✅ Link tylko dla ADMINA */}
+          {userInfo?.role === 'ADMIN' && (
+            <Link to="/users" className="hover:underline">Zespół</Link>
+          )}
         </div>
       </div>
 

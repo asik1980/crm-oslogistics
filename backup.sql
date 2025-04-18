@@ -133,7 +133,7 @@ CREATE TABLE `User` (
   `role` enum('ADMIN','HANDLOWIEC') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'HANDLOWIEC',
   PRIMARY KEY (`id`),
   UNIQUE KEY `User_email_key` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -142,7 +142,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (1,'admin@example.com','123456','Adrian','Sawicki',NULL,'ADMIN'),(4,'ewa@firma.pl','123456','Ewa','Handlowa','790000000','HANDLOWIEC');
+INSERT INTO `User` VALUES (1,'a.sawicki@oslogistics.pl','ASDasd','Adrian','Sawicki','720882884','ADMIN'),(4,'k.markiewicz@oslogistics.pl','123456','Katarzyna','Markiewicz','790000000','HANDLOWIEC'),(5,'test@test.pl','123456','Test','Testowy','777111888','HANDLOWIEC');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -155,4 +155,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-17 14:06:24
+-- Dump completed on 2025-04-18 10:27:20
