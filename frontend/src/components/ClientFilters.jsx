@@ -69,6 +69,8 @@ const ClientFilters = ({ onFilter }) => {
         <label><input type="checkbox" name="interestedFCL" checked={filters.interestedFCL} onChange={handleChange} /> FCL</label>
         <label><input type="checkbox" name="interestedLCL" checked={filters.interestedLCL} onChange={handleChange} /> LCL</label>
         <label><input type="checkbox" name="interestedAIR" checked={filters.interestedAIR} onChange={handleChange} /> AIR</label>
+        <label><input type="checkbox" name="interestedFTL" checked={filters.interestedFTL} onChange={handleChange} /> FTL</label>
+        <label><input type="checkbox" name="interestedRAIL" checked={filters.interestedRAIL} onChange={handleChange} /> RAIL</label>
         <label><input type="checkbox" name="isImporter" checked={filters.isImporter} onChange={handleChange} /> Importer</label>
         <label><input type="checkbox" name="isExporter" checked={filters.isExporter} onChange={handleChange} /> Eksporter</label>
         <label><input type="checkbox" name="fromChina" checked={filters.fromChina} onChange={handleChange} /> Chiny</label>

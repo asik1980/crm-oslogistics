@@ -2,23 +2,35 @@ import React from 'react'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
-const token = localStorage.getItem('token')
-let userRole = ''
-try {
-  if (token) {
-    const decoded = jwtDecode(token)
-    userRole = decoded.role
-  }
-} catch (err) {
-  console.error('Błąd dekodowania tokena:', err)
+const tagColors = {
+  FCL: 'bg-blue-100 text-blue-700',
+  LCL: 'bg-purple-100 text-purple-700',
+  AIR: 'bg-teal-100 text-teal-700',
+  FTL: 'bg-orange-100 text-orange-700',
+  RAIL: 'bg-indigo-100 text-indigo-700',
+  Importer: 'bg-green-100 text-green-700',
+  Eksporter: 'bg-yellow-100 text-yellow-700',
+  Chiny: 'bg-red-100 text-red-700',
 }
 
-const ClientList = ({ clients = [], onDelete }) => {
+const Tag = ({ text }) => (
+  <span className={`text-xs px-2 py-1 rounded ${tagColors[text] || 'bg-gray-100 text-gray-700'}`}>
+    {text}
+  </span>
+)
+
+const ClientList = ({ clients = [], onDelete, onEdit }) => {
+  const token = localStorage.getItem('token')
+  const decoded = token ? jwtDecode(token) : {}
+  const userRole = decoded.role
+
   const handleDelete = async (id) => {
     if (confirm('Czy na pewno chcesz usunąć tego klienta?')) {
       try {
-        await axios.delete(`http://localhost:3000/clients/${id}`)
-        if (onDelete) onDelete()
+        await axios.delete(`http://localhost:3000/clients/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        onDelete?.()
       } catch (err) {
         console.error('Błąd przy usuwaniu klienta:', err)
       }
@@ -26,14 +38,13 @@ const ClientList = ({ clients = [], onDelete }) => {
   }
 
   const handleUpdate = async (id, field, value) => {
-    const token = localStorage.getItem('token')
     try {
-      await axios.put(`http://localhost:3000/clients/${id}`, { [field]: value }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await axios.put(`http://localhost:3000/clients/${id}`, {
+        [field]: value
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       })
-      if (onDelete) onDelete() // Odśwież listę po zmianie statusu
+      onDelete?.()
     } catch (err) {
       console.error('Błąd przy aktualizacji klienta:', err)
     }
@@ -51,7 +62,7 @@ const ClientList = ({ clients = [], onDelete }) => {
             <th className="border px-4 py-2">NIP</th>
             <th className="border px-4 py-2">Email / Telefon</th>
             <th className="border px-4 py-2">Strona www</th>
-            <th className="border px-4 py-2">Zainteresowania</th>
+            <th className="border px-4 py-2">Produkty</th>
             <th className="border px-4 py-2">Tagi</th>
             <th className="border px-4 py-2">Status</th>
             <th className="border px-4 py-2 text-center">Akcje</th>
@@ -61,27 +72,27 @@ const ClientList = ({ clients = [], onDelete }) => {
           {clients.map(client => (
             <tr key={client.id} className="border-b hover:bg-gray-50">
               <td className="border px-4 py-2 font-semibold">{client.name}</td>
-              <td className="border px-4 py-2">
-                {client.user?.firstName} {client.user?.lastName}
-              </td>
+              <td className="border px-4 py-2">{client.user?.firstName} {client.user?.lastName}</td>
               <td className="border px-4 py-2">{client.city}</td>
-              <td className="border px-4 py-2">{client.zipCode} <br /> {client.address}</td>
+              <td className="border px-4 py-2">{client.zipCode}<br />{client.address}</td>
               <td className="border px-4 py-2">{client.nip}</td>
-              <td className="border px-4 py-2">
-                {client.email}<br />
-                {client.phone}
-              </td>
+              <td className="border px-4 py-2">{client.email}<br />{client.phone}</td>
               <td className="border px-4 py-2">{client.website}</td>
-              <td className="border px-4 py-2">
-                {client.interestedFCL && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded mr-1">FCL</span>}
-                {client.interestedLCL && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded mr-1">LCL</span>}
-                {client.interestedAIR && <span className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded mr-1">AIR</span>}
+
+              <td className="border px-4 py-2 space-x-1">
+                {client.interestedFCL && <Tag text="FCL" />}
+                {client.interestedLCL && <Tag text="LCL" />}
+                {client.interestedAIR && <Tag text="AIR" />}
+                {client.interestedFTL && <Tag text="FTL" />}
+                {client.interestedRAIL && <Tag text="RAIL" />}
               </td>
-              <td className="border px-4 py-2">
-                {client.isImporter && <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded mr-1">Importer</span>}
-                {client.isExporter && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded mr-1">Eksporter</span>}
-                {client.fromChina && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded mr-1">Chiny</span>}
+
+              <td className="border px-4 py-2 space-x-1">
+                {client.isImporter && <Tag text="Importer" />}
+                {client.isExporter && <Tag text="Eksporter" />}
+                {client.fromChina && <Tag text="Chiny" />}
               </td>
+
               <td className="border px-4 py-2">
                 <select
                   defaultValue={client.status}
@@ -99,7 +110,14 @@ const ClientList = ({ clients = [], onDelete }) => {
                   <option value="ODRZUCONY">ODRZUCONY</option>
                 </select>
               </td>
-              <td className="border px-4 py-2 text-center">
+
+              <td className="border px-4 py-2 flex gap-2 justify-center">
+                <button
+                  onClick={() => onEdit?.(client)}
+                  className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+                >
+                  Edytuj
+                </button>
                 <button
                   onClick={() => handleDelete(client.id)}
                   className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"

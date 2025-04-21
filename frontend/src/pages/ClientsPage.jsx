@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import ClientList from '../components/ClientList'
 import ClientModal from '../components/ClientModal'
+import ClientEditModal from '../components/ClientEditModal'
 import ClientFilters from '../components/ClientFilters'
 
 const ClientsPage = () => {
   const [clients, setClients] = useState([])
   const [filtered, setFiltered] = useState([])
   const [filters, setFilters] = useState({})
-  const [showModal, setShowModal] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedClient, setSelectedClient] = useState(null)
 
   const fetchClients = () => {
     const token = localStorage.getItem('token')
@@ -36,10 +39,11 @@ const ClientsPage = () => {
       const fclMatch = !filters.interestedFCL || client.interestedFCL
       const lclMatch = !filters.interestedLCL || client.interestedLCL
       const airMatch = !filters.interestedAIR || client.interestedAIR
+      const ftlMatch = !filters.interestedFTL || client.interestedFTL
+      const railMatch = !filters.interestedRAIL || client.interestedRAIL
       const importerMatch = !filters.isImporter || client.isImporter
       const exporterMatch = !filters.isExporter || client.isExporter
       const fromChinaMatch = !filters.fromChina || client.fromChina
-
       const statusMatch = !filters.status || client.status === filters.status
 
       return (
@@ -49,6 +53,8 @@ const ClientsPage = () => {
         fclMatch &&
         lclMatch &&
         airMatch &&
+        ftlMatch &&
+        railMatch &&
         importerMatch &&
         exporterMatch &&
         fromChinaMatch &&
@@ -63,6 +69,16 @@ const ClientsPage = () => {
     setFiltered(newList)
   }
 
+  const handleOpenAddModal = () => {
+    setSelectedClient(null)
+    setShowAddModal(true)
+  }
+
+  const handleOpenEditModal = (client) => {
+    setSelectedClient(client)
+    setShowEditModal(true)
+  }
+
   useEffect(() => {
     fetchClients()
   }, [])
@@ -72,20 +88,38 @@ const ClientsPage = () => {
       <div className="flex justify-between items-start flex-wrap gap-4 mb-4">
         <ClientFilters onFilter={handleFilterChange} />
         <button
-          onClick={() => setShowModal(true)}
+          onClick={handleOpenAddModal}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 h-fit"
         >
           ➕ Dodaj klienta
         </button>
       </div>
 
-      <ClientList clients={filtered} onDelete={fetchClients} />
-
-      <ClientModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onAdded={fetchClients}
+      <ClientList
+        clients={filtered}
+        onDelete={fetchClients}
+        onEdit={handleOpenEditModal}
       />
+
+      {showAddModal && (
+        <ClientModal
+          open={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          onAdded={fetchClients}
+        />
+      )}
+
+      {showEditModal && (
+        <ClientEditModal
+          open={showEditModal}
+          client={selectedClient}
+          onClose={() => {
+            setShowEditModal(false)
+            setSelectedClient(null)
+          }}
+          onSaved={fetchClients} // 🟢 TO MUSI BYĆ!
+        />
+      )}
     </div>
   )
 }

@@ -4,10 +4,10 @@ import {
   Post,
   Put,
   Delete,
-  Body,
   Param,
-  Request,
+  Body,
   UseGuards,
+  Request,
 } from '@nestjs/common'
 import { ClientService } from './client.service'
 import { AuthGuard } from '@nestjs/passport'
@@ -25,16 +25,17 @@ export class ClientController {
   }
 
   @Post()
-  async createClient(@Request() req, @Body() dto: any) {
-    const userId = req.user.userId
-    return this.clientService.createClient(dto, userId)
+  async createClient(@Body() data: any) {
+    return this.clientService.createClient(data)
   }
 
   @Put(':id')
-  async updateClient(
-    @Param('id') id: string,
-    @Body() dto: any
-  ) {
+  async updateClient(@Param('id') id: string, @Body() dto: any) {
     return this.clientService.updateClient(Number(id), dto)
+  }
+
+  @Delete(':id')
+  async deleteClient(@Param('id') id: string) {
+    return this.clientService.deleteClient(Number(id))
   }
 }
