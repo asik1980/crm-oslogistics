@@ -14,7 +14,7 @@ const AppRoutes = ({ onLogout, refreshFlag, handleRefreshClients }) => {
   return (
     <>
       <Navbar onLogout={onLogout} />
-      <div className="container mx-auto p-6">
+      <div className="w-full px-6 py-4">
         <Routes>
           <Route path="/" element={<ClientsPage />} />
           <Route path="/dashboard" element={<Dashboard />} />

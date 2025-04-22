@@ -36,31 +36,22 @@ export class ClientService {
   }
 
   async updateClient(id: number, data: any) {
-    const {
-      id: _,
-      createdAt,
-      updatedAt,
-      user,
-      contacts = [],
-      ...rest
-    } = data
+    const { id: _, user, createdAt, updatedAt, contacts = [], userId, ...rest } = data
 
-    // 1. Usuń istniejące kontakty
-    await this.prisma.contact.deleteMany({
-      where: { clientId: id }
-    })
+    // Usuń stare kontakty
+    await this.prisma.contact.deleteMany({ where: { clientId: id } })
 
-    // 2. Usuń z kontaktów pola id i clientId
-    const sanitizedContacts = contacts.map(({ id, clientId, ...rest }) => rest)
+    // Przygotuj kontakty bez pól nieakceptowalnych
+    const sanitizedContacts = contacts.map(({ id, clientId, _changed, ...c }) => c)
 
-    // 3. Zaktualizuj klienta
     return this.prisma.client.update({
       where: { id },
       data: {
         ...rest,
         contacts: {
           create: sanitizedContacts
-        }
+        },
+        user: { connect: { id: Number(userId) } } // ✅ FIX: userId rzutowany na Int
       },
       include: {
         contacts: true,

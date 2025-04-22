@@ -8,9 +8,38 @@ const ClientEditModal = ({ open, onClose, client, onSaved }) => {
   const [contacts, setContacts] = useState(
     (client.contacts || []).map(c => ({ ...c, _changed: false }))
   )
+  const [users, setUsers] = useState([])
   const [newContact, setNewContact] = useState({
     firstName: '', lastName: '', position: '', email: '', phone: '', salutation: ''
   })
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        const res = await axios.get('http://localhost:3000/users', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        setUsers(res.data)
+      } catch (err) {
+        console.error('Błąd pobierania użytkowników:', err)
+      }
+    }
+    fetchUsers()
+  }, [])
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && open) {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleEsc)
+    return () => {
+      window.removeEventListener('keydown', handleEsc)
+    }
+  }, [open, onClose])
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -37,7 +66,7 @@ const ClientEditModal = ({ open, onClose, client, onSaved }) => {
   }
 
   const removeContact = (index) => {
-    setContacts(contacts.filter((_, i) => i !== index))
+    setContacts(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleNewContactChange = (e) => {
@@ -59,9 +88,7 @@ const ClientEditModal = ({ open, onClose, client, onSaved }) => {
         ...formData,
         contacts
       }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` }
       })
       onSaved?.()
       onClose()
@@ -77,7 +104,7 @@ const ClientEditModal = ({ open, onClose, client, onSaved }) => {
         <h2 className="text-2xl font-bold mb-4">✏️ Edycja klienta</h2>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* 🔵 Dane podstawowe */}
+          {/* 🔵 Lewa kolumna – dane podstawowe */}
           <div className="space-y-2">
             <input name="name" value={formData.name || ''} onChange={handleChange} placeholder="Nazwa firmy" className="border p-2 w-full" required />
             <input name="city" value={formData.city || ''} onChange={handleChange} placeholder="Miasto" className="border p-2 w-full" />
@@ -95,51 +122,57 @@ const ClientEditModal = ({ open, onClose, client, onSaved }) => {
               <option value="C">C (OK)</option>
               <option value="D">D (Null)</option>
             </select>
+
+            <select name="userId" value={formData.userId || ''} onChange={handleChange} className="border p-2 w-full">
+              <option value="">Wybierz opiekuna</option>
+              {users.map(user => (
+                <option key={user.id} value={user.id}>
+                  {user.firstName} {user.lastName}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* 🟢 Produkty, Tagi, Kontakty */}
+          {/* 🟢 Prawa kolumna – produkty, tagi, kontakty */}
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold mb-1">Produkty:</h3>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <label><input type="checkbox" name="interestedFCL" checked={formData.interestedFCL} onChange={handleChange} /> FCL</label>
-                <label><input type="checkbox" name="interestedLCL" checked={formData.interestedLCL} onChange={handleChange} /> LCL</label>
-                <label><input type="checkbox" name="interestedAIR" checked={formData.interestedAIR} onChange={handleChange} /> AIR</label>
-                <label><input type="checkbox" name="interestedFTL" checked={formData.interestedFTL} onChange={handleChange} /> FTL</label>
-                <label><input type="checkbox" name="interestedRAIL" checked={formData.interestedRAIL} onChange={handleChange} /> Kolej</label>
+                {['interestedFCL', 'interestedLCL', 'interestedAIR', 'interestedFTL', 'interestedRAIL'].map(p => (
+                  <label key={p}><input type="checkbox" name={p} checked={formData[p]} onChange={handleChange} /> {p.replace('interested', '')}</label>
+                ))}
               </div>
             </div>
 
             <div>
               <h3 className="font-semibold mb-1">Tagi:</h3>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <label><input type="checkbox" name="isImporter" checked={formData.isImporter} onChange={handleChange} /> Importer</label>
-                <label><input type="checkbox" name="isExporter" checked={formData.isExporter} onChange={handleChange} /> Eksporter</label>
-                <label><input type="checkbox" name="fromChina" checked={formData.fromChina} onChange={handleChange} /> Z Chin</label>
+                {['isImporter', 'isExporter', 'fromChina'].map(t => (
+                  <label key={t}><input type="checkbox" name={t} checked={formData[t]} onChange={handleChange} /> {t}</label>
+                ))}
               </div>
             </div>
 
             <div>
               <h3 className="font-semibold mb-1">Kontakty:</h3>
-              {contacts.map((contact, index) => (
-                <div key={index} className="border border-gray-300 p-3 rounded mb-3 bg-gray-50">
+              {contacts.map((c, index) => (
+                <div key={index} className="border p-3 rounded mb-3 bg-gray-50">
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <input className="border p-1" defaultValue={contact.firstName} placeholder="Imię" onChange={e => handleContactChange(index, 'firstName', e.target.value)} />
-                    <input className="border p-1" defaultValue={contact.lastName} placeholder="Nazwisko" onChange={e => handleContactChange(index, 'lastName', e.target.value)} />
-                    <input className="border p-1" defaultValue={contact.phone} placeholder="Telefon" onChange={e => handleContactChange(index, 'phone', e.target.value)} />
-                    <input className="border p-1" defaultValue={contact.email} placeholder="Email" onChange={e => handleContactChange(index, 'email', e.target.value)} />
-                    <input className="border p-1" defaultValue={contact.position} placeholder="Stanowisko" onChange={e => handleContactChange(index, 'position', e.target.value)} />
-                    <input className="border p-1" defaultValue={contact.salutation} placeholder="Zwrot" onChange={e => handleContactChange(index, 'salutation', e.target.value)} />
+                    <input className="border p-1" value={c.firstName} onChange={e => handleContactChange(index, 'firstName', e.target.value)} placeholder="Imię" />
+                    <input className="border p-1" value={c.lastName} onChange={e => handleContactChange(index, 'lastName', e.target.value)} placeholder="Nazwisko" />
+                    <input className="border p-1" value={c.phone} onChange={e => handleContactChange(index, 'phone', e.target.value)} placeholder="Telefon" />
+                    <input className="border p-1" value={c.email} onChange={e => handleContactChange(index, 'email', e.target.value)} placeholder="Email" />
+                    <input className="border p-1" value={c.position} onChange={e => handleContactChange(index, 'position', e.target.value)} placeholder="Stanowisko" />
+                    <input className="border p-1" value={c.salutation} onChange={e => handleContactChange(index, 'salutation', e.target.value)} placeholder="Zwrot grzecznościowy" />
                   </div>
                   <div className="flex justify-between mt-2">
                     <button
                       type="button"
                       onClick={() => saveContact(index)}
-                      disabled={!contact._changed}
-                      className={`text-xs px-3 py-1 rounded transition-all
-                        ${contact._changed
-                          ? 'bg-green-600 text-white hover:bg-green-700'
-                          : 'bg-gray-300 text-gray-700 cursor-not-allowed'}`}
+                      disabled={!c._changed}
+                      className={`text-xs px-3 py-1 rounded transition-all ${
+                        c._changed ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-300 text-gray-700 cursor-not-allowed'
+                      }`}
                     >
                       Zapisz
                     </button>
@@ -154,15 +187,18 @@ const ClientEditModal = ({ open, onClose, client, onSaved }) => {
                 </div>
               ))}
 
-              {/* ➕ Nowy kontakt */}
               <div className="mt-4">
                 <div className="grid grid-cols-2 gap-2 text-xs mb-2">
-                  <input className="border p-1" name="firstName" placeholder="Imię" value={newContact.firstName} onChange={handleNewContactChange} />
-                  <input className="border p-1" name="lastName" placeholder="Nazwisko" value={newContact.lastName} onChange={handleNewContactChange} />
-                  <input className="border p-1" name="phone" placeholder="Telefon" value={newContact.phone} onChange={handleNewContactChange} />
-                  <input className="border p-1" name="email" placeholder="Email" value={newContact.email} onChange={handleNewContactChange} />
-                  <input className="border p-1" name="position" placeholder="Stanowisko" value={newContact.position} onChange={handleNewContactChange} />
-                  <input className="border p-1" name="salutation" placeholder="Zwrot" value={newContact.salutation} onChange={handleNewContactChange} />
+                  {[
+                    { key: 'firstName', label: 'Imię' },
+                    { key: 'lastName', label: 'Nazwisko' },
+                    { key: 'phone', label: 'Telefon' },
+                    { key: 'email', label: 'Email' },
+                    { key: 'position', label: 'Stanowisko' },
+                    { key: 'salutation', label: 'Zwrot grzecznościowy' }
+                  ].map(({ key, label }) => (
+                    <input key={key} className="border p-1" name={key} placeholder={label} value={newContact[key]} onChange={handleNewContactChange} />
+                  ))}
                 </div>
                 <button type="button" onClick={addContact} className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">
                   ➕ Dodaj kontakt

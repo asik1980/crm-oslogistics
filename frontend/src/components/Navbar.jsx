@@ -23,9 +23,7 @@ const Navbar = ({ onLogout }) => {
         </Link>
 
         <div className="flex gap-4 ml-6">
-          <Link to="/" className="hover:underline">Klienci</Link>
-          <Link to="/dashboard" className="hover:underline">Dashboard</Link>
-          <Link to="/contacts" className="hover:underline">Kontakty</Link>
+          <Link to="/" className="hover:underline">CRM</Link>
 
           {/* ✅ Link tylko dla ADMINA */}
           {userInfo?.role === 'ADMIN' && (

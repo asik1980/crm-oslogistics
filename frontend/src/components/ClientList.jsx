@@ -52,34 +52,33 @@ const ClientList = ({ clients = [], onDelete, onEdit }) => {
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full border text-sm text-left bg-white rounded shadow">
+      <table className="table-fixed w-full border text-sm text-left bg-white rounded shadow">
         <thead className="bg-gray-100">
           <tr>
-            <th className="border px-4 py-2">Firma</th>
-            <th className="border px-4 py-2">Opiekun</th>
-            <th className="border px-4 py-2">Miasto</th>
-            <th className="border px-4 py-2">Kod / Adres</th>
-            <th className="border px-4 py-2">NIP</th>
-            <th className="border px-4 py-2">Email / Telefon</th>
-            <th className="border px-4 py-2">Strona www</th>
-            <th className="border px-4 py-2">Produkty</th>
-            <th className="border px-4 py-2">Tagi</th>
-            <th className="border px-4 py-2">Status</th>
-            <th className="border px-4 py-2 text-center">Akcje</th>
+            <th className="border px-4 py-2 w-[120px]">Firma</th>
+            <th className="border px-4 py-2 w-[120px]">Produkty</th>
+            <th className="border px-4 py-2 w-[120px]">Tagi</th>
+            <th className="border px-4 py-2 w-[50px]">Status</th>
+            <th className="border px-4 py-2 w-[100px] text-center">Akcje</th>
           </tr>
         </thead>
         <tbody>
           {clients.map(client => (
             <tr key={client.id} className="border-b hover:bg-gray-50">
-              <td className="border px-4 py-2 font-semibold">{client.name}</td>
-              <td className="border px-4 py-2">{client.user?.firstName} {client.user?.lastName}</td>
-              <td className="border px-4 py-2">{client.city}</td>
-              <td className="border px-4 py-2">{client.zipCode}<br />{client.address}</td>
-              <td className="border px-4 py-2">{client.nip}</td>
-              <td className="border px-4 py-2">{client.email}<br />{client.phone}</td>
-              <td className="border px-4 py-2">{client.website}</td>
+              <td className="border px-4 py-2  w-[120px] font-semibold">
+                <div className="flex items-center gap-2">
+                  <span>{client.name}</span>
+                  <button
+                    onClick={() => onEdit?.(client)}
+                    title="Edytuj klienta"
+                    className="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    ✏️
+                  </button>
+                </div>
+              </td>
 
-              <td className="border px-4 py-2 space-x-1">
+              <td className="border px-4 py-2 space-x-1 w-[120px]">
                 {client.interestedFCL && <Tag text="FCL" />}
                 {client.interestedLCL && <Tag text="LCL" />}
                 {client.interestedAIR && <Tag text="AIR" />}
@@ -87,13 +86,13 @@ const ClientList = ({ clients = [], onDelete, onEdit }) => {
                 {client.interestedRAIL && <Tag text="RAIL" />}
               </td>
 
-              <td className="border px-4 py-2 space-x-1">
+              <td className="border px-4 py-2 space-x-1 w-[120px]">
                 {client.isImporter && <Tag text="Importer" />}
                 {client.isExporter && <Tag text="Eksporter" />}
                 {client.fromChina && <Tag text="Chiny" />}
               </td>
 
-              <td className="border px-4 py-2">
+              <td className="border px-4 py-2 w-[50px]">
                 <select
                   defaultValue={client.status}
                   onBlur={(e) => userRole === 'ADMIN' && handleUpdate(client.id, 'status', e.target.value)}
@@ -111,13 +110,7 @@ const ClientList = ({ clients = [], onDelete, onEdit }) => {
                 </select>
               </td>
 
-              <td className="border px-4 py-2 flex gap-2 justify-center">
-                <button
-                  onClick={() => onEdit?.(client)}
-                  className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
-                >
-                  Edytuj
-                </button>
+              <td className="border px-4 py-2 w-[100px] flex gap-2 justify-center">
                 <button
                   onClick={() => handleDelete(client.id)}
                   className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
