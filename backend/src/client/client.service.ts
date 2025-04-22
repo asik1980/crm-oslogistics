@@ -1,9 +1,13 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { PrismaClient } from '@prisma/client'
+import { MailService } from '../mail/mail.service'
 
 @Injectable()
 export class ClientService {
-  constructor(@Inject('PrismaClient') private readonly prisma: PrismaClient) {}
+  constructor(
+    @Inject('PrismaClient') private readonly prisma: PrismaClient,
+    private readonly mailService: MailService
+  ) {}
 
   async getClients(userId: number, isAdmin: boolean) {
     return this.prisma.client.findMany({
@@ -18,7 +22,6 @@ export class ClientService {
   async createClient(data: any) {
     const { contacts = [], ...clientData } = data
 
-    // Usuń z kontaktów pola id i clientId (jeśli są)
     const sanitizedContacts = contacts.map(({ id, clientId, ...rest }) => rest)
 
     return this.prisma.client.create({
@@ -38,26 +41,44 @@ export class ClientService {
   async updateClient(id: number, data: any) {
     const { id: _, user, createdAt, updatedAt, contacts = [], userId, ...rest } = data
 
-    // Usuń stare kontakty
+    const existingClient = await this.prisma.client.findUnique({ where: { id } })
+
     await this.prisma.contact.deleteMany({ where: { clientId: id } })
 
-    // Przygotuj kontakty bez pól nieakceptowalnych
     const sanitizedContacts = contacts.map(({ id, clientId, _changed, ...c }) => c)
 
-    return this.prisma.client.update({
+    const updatedClient = await this.prisma.client.update({
       where: { id },
       data: {
         ...rest,
         contacts: {
-          create: sanitizedContacts
+          create: sanitizedContacts,
         },
-        user: { connect: { id: Number(userId) } } // ✅ FIX: userId rzutowany na Int
+        ...(userId ? { user: { connect: { id: Number(userId) } } } : {}),
       },
       include: {
         contacts: true,
-        user: true
-      }
+        user: true,
+      },
     })
+
+    if (
+      updatedClient.status !== existingClient.status &&
+      ['ZATWIERDZONY', 'ODRZUCONY'].includes(updatedClient.status)
+    ) {
+      const assignedUser = await this.prisma.user.findUnique({
+        where: { id: Number(userId || existingClient.userId) },
+      })
+
+      if (assignedUser?.email) {
+        await this.mailService.sendClientAccepted(
+          assignedUser.email,
+          `${updatedClient.name} – status został zmieniony na: ${updatedClient.status}`
+        )
+      }
+    }
+
+    return updatedClient
   }
 
   async deleteClient(id: number) {

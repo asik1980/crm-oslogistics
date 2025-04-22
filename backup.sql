@@ -1,9 +1,9 @@
 mysqldump: [Warning] Using a password on the command line interface can be insecure.
--- MySQL dump 10.13  Distrib 8.0.41, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.42, for Linux (x86_64)
 --
 -- Host: localhost    Database: crm_oslogistics
 -- ------------------------------------------------------
--- Server version	8.0.41
+-- Server version	8.0.42
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -90,7 +90,7 @@ CREATE TABLE `Client` (
 
 LOCK TABLES `Client` WRITE;
 /*!40000 ALTER TABLE `Client` DISABLE KEYS */;
-INSERT INTO `Client` VALUES (1,'OS Logistics','2025-04-16 13:44:26.458','Kapitańska 47a','Gdynia',1,0,1,1,0,1,'5862282298','2025-04-18 11:47:27.614',1,'www.oslogistics.pl','81-249','info@oslogistics.pl','720882884','ZATWIERDZONY',0,0,'D',NULL),(3,'Project AS','2025-04-17 10:21:13.582','Wagnera 18/17','Gdynia',1,1,1,1,1,1,'9581361163','2025-04-22 13:13:33.196',1,'aaa','81-578','a.sawicki@projectas.pl','720111222','DOAKCEPTACJI',1,1,'A','test 2'),(4,'Testowa','2025-04-18 10:51:58.204','Gdańska 5','Gdańsk',1,1,0,1,0,0,'123456789','2025-04-18 10:51:58.204',1,'www.test.pl','80-255','asawicki@asawicki.pl','720222333','DOAKCEPTACJI',0,0,'D',NULL);
+INSERT INTO `Client` VALUES (1,'OS Logistics','2025-04-16 13:44:26.458','Kapitańska 47a','Gdynia',1,0,1,1,0,1,'5862282298','2025-04-22 16:13:43.715',1,'www.oslogistics.pl','81-249','info@oslogistics.pl','720882884','ZATWIERDZONY',0,0,'D',NULL),(3,'Project AS','2025-04-17 10:21:13.582','Wagnera 18','Gdynia',1,1,1,1,1,1,'9581361163','2025-04-22 16:26:37.314',1,'aa','81-578','a.sawicki@projectas.pl','720111222','ZATWIERDZONY',1,1,'A','test 2'),(4,'Testowa','2025-04-18 10:51:58.204','Gdańska 5','Gdańsk',1,1,0,1,0,0,'123456789','2025-04-22 16:11:03.541',1,'www.test.pl','80-255','asawicki@asawicki.pl','720222333','ZATWIERDZONY',0,0,'D',NULL);
 /*!40000 ALTER TABLE `Client` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,7 +113,7 @@ CREATE TABLE `Contact` (
   PRIMARY KEY (`id`),
   KEY `Contact_clientId_fkey` (`clientId`),
   CONSTRAINT `Contact_clientId_fkey` FOREIGN KEY (`clientId`) REFERENCES `Client` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,7 +122,6 @@ CREATE TABLE `Contact` (
 
 LOCK TABLES `Contact` WRITE;
 /*!40000 ALTER TABLE `Contact` DISABLE KEYS */;
-INSERT INTO `Contact` VALUES (12,3,'Adrian','Sawicki','a.sawicki@projectas.pl','720882884','szefo','Szanowny Panie');
 /*!40000 ALTER TABLE `Contact` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -165,4 +164,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-22 13:59:14
+-- Dump completed on 2025-04-22 16:31:33
