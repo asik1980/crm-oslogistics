@@ -5,21 +5,30 @@ import ClientModal from '../components/ClientModal'
 import ClientEditModal from '../components/ClientEditModal'
 import ClientFilters from '../components/ClientFilters'
 
-const ClientsPage = () => {
+const ClientsPage = ({ user }) => {
+  const userId = user?.sub // 👈 TO JEST TWOJE userId z JWT
+  const role = user?.role
+
   const [clients, setClients] = useState([])
   const [filtered, setFiltered] = useState([])
-  const [filters, setFilters] = useState({})
+  const [filters, setFilters] = useState(() => {
+    return userId ? { userId: String(userId) } : {}
+  })
+  const [users, setUsers] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [selectedClient, setSelectedClient] = useState(null)
 
-  const fetchClients = () => {
-    const token = localStorage.getItem('token')
 
+  useEffect(() => {
+    fetchClients()
+    if (role === 'ADMIN') fetchUsers()
+  }, [filters])
+
+  const fetchClients = () => {
     axios.get('http://localhost:3000/clients', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      params: filters
     })
       .then(res => {
         setClients(res.data)
@@ -30,12 +39,19 @@ const ClientsPage = () => {
       })
   }
 
+  const fetchUsers = () => {
+    axios.get('http://localhost:3000/users', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(res => setUsers(res.data))
+      .catch(err => console.error('❌ Błąd pobierania użytkowników:', err))
+  }
+
   const applyFilters = (all, filters) => {
     return all.filter(client => {
       const nameMatch = !filters.name || client.name?.toLowerCase().includes(filters.name.toLowerCase())
       const cityMatch = !filters.city || client.city?.toLowerCase().includes(filters.city.toLowerCase())
       const nipMatch = !filters.nip || client.nip?.toLowerCase().includes(filters.nip.toLowerCase())
-
       const fclMatch = !filters.interestedFCL || client.interestedFCL
       const lclMatch = !filters.interestedLCL || client.interestedLCL
       const airMatch = !filters.interestedAIR || client.interestedAIR
@@ -79,17 +95,19 @@ const ClientsPage = () => {
     setShowEditModal(true)
   }
 
-  useEffect(() => {
-    fetchClients()
-  }, [])
-
   return (
     <div>
-      <div className="flex justify-between items-start flex-wrap gap-4 mb-4">
-        <ClientFilters onFilter={handleFilterChange} />
+      <div className="flex flex-wrap items-end gap-4 mb-4">
+        <ClientFilters
+          filters={filters}
+          onFilter={handleFilterChange}
+          userId={userId}
+          role={role}
+          users={users}
+        />
         <button
           onClick={handleOpenAddModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 h-fit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           ➕ Dodaj klienta
         </button>
@@ -117,7 +135,7 @@ const ClientsPage = () => {
             setShowEditModal(false)
             setSelectedClient(null)
           }}
-          onSaved={fetchClients} // 🟢 TO MUSI BYĆ!
+          onSaved={fetchClients}
         />
       )}
     </div>

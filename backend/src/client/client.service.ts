@@ -1,20 +1,41 @@
-import { Injectable, Inject } from '@nestjs/common'
-import { PrismaClient } from '@prisma/client'
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from '../prisma/prisma.service'
 import { MailService } from '../mail/mail.service'
 
 @Injectable()
 export class ClientService {
   constructor(
-    @Inject('PrismaClient') private readonly prisma: PrismaClient,
+    private readonly prisma: PrismaService,
     private readonly mailService: MailService
   ) {}
 
-  async getClients(userId: number, isAdmin: boolean) {
+  async getClients(userId: number, isAdmin: boolean, filters: any = {}) {
     return this.prisma.client.findMany({
-      where: isAdmin ? {} : { userId },
+      where: {
+        ...(filters.name && { name: { contains: filters.name } }), // ⬅️ bez mode
+        ...(filters.city && { city: { contains: filters.city } }), // ⬅️ bez mode
+        ...(filters.nip && { nip: { contains: filters.nip } }),
+        ...(filters.status && { status: filters.status }),
+        ...(filters.interestedFCL && { interestedFCL: true }),
+        ...(filters.interestedLCL && { interestedLCL: true }),
+        ...(filters.interestedAIR && { interestedAIR: true }),
+        ...(filters.interestedFTL && { interestedFTL: true }),
+        ...(filters.interestedRAIL && { interestedRAIL: true }),
+        ...(filters.isImporter && { isImporter: true }),
+        ...(filters.isExporter && { isExporter: true }),
+        ...(filters.fromChina && { fromChina: true }),
+        ...(isAdmin
+          ? userId
+            ? { userId: Number(userId) }
+            : {}
+          : { userId }),
+      },
       include: {
         user: true,
         contacts: true,
+      },
+      orderBy: {
+        name: 'asc',
       },
     })
   }

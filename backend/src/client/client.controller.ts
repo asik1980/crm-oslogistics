@@ -8,6 +8,7 @@ import {
   Body,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common'
 import { ClientService } from './client.service'
 import { AuthGuard } from '@nestjs/passport'
@@ -18,10 +19,12 @@ export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   @Get()
-  async getClients(@Request() req) {
-    const userId = req.user.userId
-    const isAdmin = req.user.role === 'ADMIN'
-    return this.clientService.getClients(userId, isAdmin)
+  async getClients(@Request() req, @Query() query: any) {
+    const user = req.user
+    const isAdmin = user.role === 'ADMIN'
+    const userId = isAdmin ? Number(query.userId) || undefined : user.userId
+
+    return this.clientService.getClients(userId, isAdmin, query)
   }
 
   @Post()

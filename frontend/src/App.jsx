@@ -10,13 +10,13 @@ import { jwtDecode } from 'jwt-decode'
 const Dashboard = () => <div className="p-6 text-xl">Tu będzie dashboard</div>
 const Contacts = () => <div className="p-6 text-xl">Tu będą kontakty</div>
 
-const AppRoutes = ({ onLogout, refreshFlag, handleRefreshClients }) => {
+const AppRoutes = ({ onLogout, refreshFlag, handleRefreshClients, user }) => {
   return (
     <>
-      <Navbar onLogout={onLogout} />
+      <Navbar onLogout={onLogout} user={user} />
       <div className="w-full px-6 py-4">
         <Routes>
-          <Route path="/" element={<ClientsPage />} />
+          <Route path="/" element={<ClientsPage user={user} />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contacts" element={<Contacts />} />
           <Route
@@ -50,6 +50,9 @@ function App() {
     setRefreshFlag(prev => prev + 1)
   }
 
+  const token = localStorage.getItem('token')
+  const user = token ? jwtDecode(token) : {}
+ 
   if (!isLoggedIn) {
     return <LoginForm onLoginSuccess={handleLoginSuccess} />
   }
@@ -60,6 +63,7 @@ function App() {
         onLogout={handleLogout}
         refreshFlag={refreshFlag}
         handleRefreshClients={handleRefreshClients}
+        user={user} // ✅ tu przekazujesz user
       />
     </Router>
   )

@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from 'react'
 
-const ClientFilters = ({ onFilter }) => {
-  const [filters, setFilters] = useState({
-    name: '',
-    city: '',
-    nip: '',
-    interestedFCL: false,
-    interestedLCL: false,
-    interestedAIR: false,
-    isImporter: false,
-    isExporter: false,
-    fromChina: false,
-    status: '',
-  })
+const ClientFilters = ({ onFilter, filters: initialFilters, userId, role, users = [] }) => {
+  const [filters, setFilters] = useState(initialFilters || {})
 
-  // wysyłamy filtry do rodzica po każdej zmianie
+  useEffect(() => {
+    setFilters(initialFilters || {})
+  }, [initialFilters])
+
   useEffect(() => {
     if (onFilter) onFilter(filters)
   }, [filters])
@@ -28,53 +20,87 @@ const ClientFilters = ({ onFilter }) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center w-full max-w-6xl">
+    <div className="flex-1 flex flex-wrap items-center gap-4">
+  
+      {role === 'ADMIN' && (
+        <div className="flex flex-col">
+          <label htmlFor="userId" className="text-sm font-semibold mb-1">Handlowiec:</label>
+          <select
+            id="userId"
+            name="userId"
+            value={String(filters.userId ?? '')}
+            onChange={handleChange}
+            className="border px-4 py-2 rounded w-[180px]"
+          >
+            <option value="">Wszyscy handlowcy</option>
+            {users.map((user) => (
+              <option key={user.id} value={String(user.id)}>
+                {user.firstName} {user.lastName}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+  
       <input
         type="text"
         name="name"
         placeholder="Nazwa firmy"
-        className="border px-4 py-2 rounded"
-        value={filters.name}
+        className="border px-4 py-2 rounded w-[200px]"
+        value={filters.name || ''}
         onChange={handleChange}
       />
+  
       <input
         type="text"
         name="city"
         placeholder="Miasto"
-        className="border px-4 py-2 rounded"
-        value={filters.city}
+        className="border px-4 py-2 rounded w-[160px]"
+        value={filters.city || ''}
         onChange={handleChange}
       />
+  
       <input
         type="text"
         name="nip"
         placeholder="NIP"
-        className="border px-4 py-2 rounded"
-        value={filters.nip}
+        className="border px-4 py-2 rounded w-[140px]"
+        value={filters.nip || ''}
         onChange={handleChange}
       />
+  
       <select
         name="status"
-        value={filters.status}
+        value={filters.status || ''}
         onChange={handleChange}
-        className="border px-4 py-2 rounded"
+        className="border px-4 py-2 rounded w-[180px]"
       >
         <option value="">Wszystkie statusy</option>
         <option value="DOAKCEPTACJI">DO AKCEPTACJI</option>
         <option value="ZATWIERDZONY">CRM</option>
         <option value="ODRZUCONY">ODRZUCONY</option>
       </select>
-
-      <div className="col-span-full flex flex-wrap gap-4 mt-2">
-        <label><input type="checkbox" name="interestedFCL" checked={filters.interestedFCL} onChange={handleChange} /> FCL</label>
-        <label><input type="checkbox" name="interestedLCL" checked={filters.interestedLCL} onChange={handleChange} /> LCL</label>
-        <label><input type="checkbox" name="interestedAIR" checked={filters.interestedAIR} onChange={handleChange} /> AIR</label>
-        <label><input type="checkbox" name="interestedFTL" checked={filters.interestedFTL} onChange={handleChange} /> FTL</label>
-        <label><input type="checkbox" name="interestedRAIL" checked={filters.interestedRAIL} onChange={handleChange} /> RAIL</label>
-        <label><input type="checkbox" name="isImporter" checked={filters.isImporter} onChange={handleChange} /> Importer</label>
-        <label><input type="checkbox" name="isExporter" checked={filters.isExporter} onChange={handleChange} /> Eksporter</label>
-        <label><input type="checkbox" name="fromChina" checked={filters.fromChina} onChange={handleChange} /> Chiny</label>
-      </div>
+  
+      {[
+        { key: 'interestedFCL', label: 'FCL' },
+        { key: 'interestedLCL', label: 'LCL' },
+        { key: 'interestedAIR', label: 'AIR' },
+        { key: 'interestedFTL', label: 'FTL' },
+        { key: 'interestedRAIL', label: 'RAIL' },
+        { key: 'isImporter', label: 'Importer' },
+        { key: 'isExporter', label: 'Eksporter' },
+        { key: 'fromChina', label: 'Chiny' }
+      ].map(({ key, label }) => (
+        <label key={key} className="flex items-center gap-1 text-sm whitespace-nowrap">
+          <input
+            type="checkbox"
+            name={key}
+            checked={filters[key] || false}
+            onChange={handleChange}
+          /> {label}
+        </label>
+      ))}
+  
     </div>
   )
 }
