@@ -49,6 +49,9 @@ model Client {
   user           User      @relation(fields: [userId], references: [id])
   notes         String?
   clientClass   String? @default("D") // A, B, C, D
+  daysBetweenTasks Int      @default(1)
+  currentGoalId Int?
+  tasks            Task[]
   contacts      Contact[]
 }
 
@@ -64,3 +67,26 @@ model Contact {
   phone        String?
 }
 
+model Goal {
+  id    Int    @id @default(autoincrement())
+  label String
+  tasks Task[]
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  client    Client   @relation(fields: [clientId], references: [id])
+  clientId  Int
+  goal      Goal     @relation(fields: [goalId], references: [id])
+  goalId    Int
+  plannedAt DateTime? // opcjonalnie, w przyszłości
+  doneAt    DateTime
+  notes     String?
+  status    TaskStatus @default(PLANNED)
+  createdAt DateTime   @default(now())
+}
+
+enum TaskStatus {
+  PLANNED
+  DONE
+}

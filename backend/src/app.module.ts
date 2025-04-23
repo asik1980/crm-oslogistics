@@ -8,10 +8,11 @@ import { UserController } from './user/user.controller'
 import { UserService } from './user/user.service'
 import { NipController } from './client/nip.controller'
 import { MailService } from './mail/mail.service'
-
+import { GoalModule } from './goal/goal.module'
+import { TaskModule } from './task/task.module'
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, GoalModule, TaskModule],
   controllers: [ClientController, UserController, NipController],
 
   providers: [

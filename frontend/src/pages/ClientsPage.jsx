@@ -6,7 +6,7 @@ import ClientEditModal from '../components/ClientEditModal'
 import ClientFilters from '../components/ClientFilters'
 
 const ClientsPage = ({ user }) => {
-  const userId = user?.sub // 👈 TO JEST TWOJE userId z JWT
+  const userId = user?.sub
   const role = user?.role
 
   const [clients, setClients] = useState([])
@@ -15,13 +15,14 @@ const ClientsPage = ({ user }) => {
     return userId ? { userId: String(userId) } : {}
   })
   const [users, setUsers] = useState([])
+  const [goals, setGoals] = useState([]) // ✅ nowość
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [selectedClient, setSelectedClient] = useState(null)
 
-
   useEffect(() => {
     fetchClients()
+    fetchGoals() // ✅ nowość
     if (role === 'ADMIN') fetchUsers()
   }, [filters])
 
@@ -36,6 +37,16 @@ const ClientsPage = ({ user }) => {
       })
       .catch(err => {
         console.error('❌ Błąd pobierania klientów:', err)
+      })
+  }
+
+  const fetchGoals = () => {
+    axios.get('http://localhost:3000/goals', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    })
+      .then(res => setGoals(res.data))
+      .catch(err => {
+        console.error('❌ Błąd pobierania celów:', err)
       })
   }
 
@@ -117,6 +128,7 @@ const ClientsPage = ({ user }) => {
         clients={filtered}
         onDelete={fetchClients}
         onEdit={handleOpenEditModal}
+        goals={goals} // ✅ przekazujemy do ClientList
       />
 
       {showAddModal && (

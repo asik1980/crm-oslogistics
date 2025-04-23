@@ -6,6 +6,7 @@ import Navbar from './components/Navbar'
 import UsersPage from './pages/UsersPage'
 import AdminRoute from './components/AdminRoute'
 import { jwtDecode } from 'jwt-decode'
+import GoalsPage from './pages/GoalsPage'
 
 const Dashboard = () => <div className="p-6 text-xl">Tu będzie dashboard</div>
 const Contacts = () => <div className="p-6 text-xl">Tu będą kontakty</div>
@@ -19,6 +20,7 @@ const AppRoutes = ({ onLogout, refreshFlag, handleRefreshClients, user }) => {
           <Route path="/" element={<ClientsPage user={user} />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contacts" element={<Contacts />} />
+          <Route path="/goals" element={<GoalsPage />} />
           <Route
             path="/users"
             element={

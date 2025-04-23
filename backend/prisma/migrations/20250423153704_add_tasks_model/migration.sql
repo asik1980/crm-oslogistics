@@ -1,0 +1,30 @@
+-- AlterTable
+ALTER TABLE `Client` ADD COLUMN `daysBetweenTasks` INTEGER NOT NULL DEFAULT 7;
+
+-- CreateTable
+CREATE TABLE `Goal` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `label` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Task` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `clientId` INTEGER NOT NULL,
+    `goalId` INTEGER NOT NULL,
+    `plannedAt` DATETIME(3) NOT NULL,
+    `doneAt` DATETIME(3) NULL,
+    `notes` VARCHAR(191) NULL,
+    `status` ENUM('PLANNED', 'DONE') NOT NULL DEFAULT 'PLANNED',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Task` ADD CONSTRAINT `Task_clientId_fkey` FOREIGN KEY (`clientId`) REFERENCES `Client`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Task` ADD CONSTRAINT `Task_goalId_fkey` FOREIGN KEY (`goalId`) REFERENCES `Goal`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

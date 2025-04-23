@@ -31,8 +31,18 @@ export class ClientService {
           : { userId }),
       },
       include: {
-        user: true,
         contacts: true,
+        user: true,
+        tasks: {
+          where: { status: 'DONE' },
+          orderBy: { doneAt: 'desc' },
+          select: {
+            id: true,
+            doneAt: true,
+            notes: true,
+            goal: { select: { label: true } }
+          }
+        }
       },
       orderBy: {
         name: 'asc',
@@ -60,14 +70,23 @@ export class ClientService {
   }
 
   async updateClient(id: number, data: any) {
-    const { id: _, user, createdAt, updatedAt, contacts = [], userId, ...rest } = data
-
+    const {
+      id: _,
+      user,
+      createdAt,
+      updatedAt,
+      contacts = [],
+      userId,
+      tasks,
+      ...rest
+    } = data
+  
     const existingClient = await this.prisma.client.findUnique({ where: { id } })
-
+  
     await this.prisma.contact.deleteMany({ where: { clientId: id } })
-
+  
     const sanitizedContacts = contacts.map(({ id, clientId, _changed, ...c }) => c)
-
+  
     const updatedClient = await this.prisma.client.update({
       where: { id },
       data: {
@@ -82,7 +101,7 @@ export class ClientService {
         user: true,
       },
     })
-
+  
     if (
       updatedClient.status !== existingClient.status &&
       ['ZATWIERDZONY', 'ODRZUCONY'].includes(updatedClient.status)
@@ -90,7 +109,7 @@ export class ClientService {
       const assignedUser = await this.prisma.user.findUnique({
         where: { id: Number(userId || existingClient.userId) },
       })
-
+  
       if (assignedUser?.email) {
         await this.mailService.sendClientAccepted(
           assignedUser.email,
@@ -98,10 +117,10 @@ export class ClientService {
         )
       }
     }
-
+  
     return updatedClient
   }
-
+  
   async deleteClient(id: number) {
     return this.prisma.client.delete({
       where: { id },
