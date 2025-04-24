@@ -10,9 +10,10 @@ import { NipController } from './client/nip.controller'
 import { MailService } from './mail/mail.service'
 import { GoalModule } from './goal/goal.module'
 import { TaskModule } from './task/task.module'
+import { GusModule } from './gus/gus.module'
 
 @Module({
-  imports: [AuthModule, GoalModule, TaskModule],
+  imports: [AuthModule, GoalModule, TaskModule, GusModule],
   controllers: [ClientController, UserController, NipController],
 
   providers: [

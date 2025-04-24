@@ -79,14 +79,61 @@ const ClientForm = ({ onAdded, onClose, mode = 'create', clientId = null, initia
       console.error('Błąd przy zapisie klienta:', err)
     }
   }
-
+  
+  const handleFetchGus = async () => {
+    const nip = formData.nip?.trim()
+  
+    if (!nip || nip.length !== 10) {
+      alert('Podaj poprawny 10-cyfrowy NIP')
+      return
+    }
+  
+    try {
+      const res = await axios.post('http://localhost:3000/gus/nip', { nip })
+      const gusData = res.data
+  
+      if (!gusData) {
+        alert('Brak danych w GUS dla podanego NIP')
+        return
+      }
+  
+      setFormData(prev => ({
+        ...prev,
+        name: gusData.nazwa || '',
+        city: gusData.miejscowosc || '',
+        zipCode: gusData.kodPocztowy || '',
+        address: gusData.ulica
+          ? `${gusData.ulica} ${gusData.nrNieruchomosci || ''}${gusData.nrLokalu ? '/' + gusData.nrLokalu : ''}`
+          : ''
+      }))
+    } catch (err) {
+      console.error('❌ Błąd pobierania z GUS:', err)
+      alert('Błąd połączenia z serwisem GUS')
+    }
+  }
+  
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded shadow">
       <input name="name" value={formData.name} onChange={handleChange} placeholder="Nazwa firmy" className="border p-2" required />
       <input name="city" value={formData.city} onChange={handleChange} placeholder="Miasto" className="border p-2" />
       <input name="zipCode" value={formData.zipCode} onChange={handleChange} placeholder="Kod pocztowy" className="border p-2" />
       <input name="address" value={formData.address} onChange={handleChange} placeholder="Adres" className="border p-2" />
-      <input name="nip" value={formData.nip} onChange={handleChange} placeholder="NIP" className="border p-2" />
+      <div className="flex items-center gap-2">
+        <input
+          name="nip"
+          value={formData.nip}
+          onChange={handleChange}
+          placeholder="NIP"
+          className="border p-2 flex-1"
+        />
+        <button
+          type="button"
+          onClick={handleFetchGus}
+          className="text-xs bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
+        >
+          GUS
+        </button>
+      </div>
       <input name="website" value={formData.website} onChange={handleChange} placeholder="Strona www" className="border p-2" />
       <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="border p-2" />
       <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Telefon" className="border p-2" />

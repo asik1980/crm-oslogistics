@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.42, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.41, for Linux (x86_64)
 --
 -- Host: localhost    Database: crm_oslogistics
 -- ------------------------------------------------------
--- Server version	8.0.42
+-- Server version	8.0.41
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -135,7 +135,7 @@ DROP TABLE IF EXISTS `Goal`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Goal` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `label` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `label` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -163,15 +163,15 @@ CREATE TABLE `Task` (
   `goalId` int NOT NULL,
   `plannedAt` datetime(3) NOT NULL,
   `doneAt` datetime(3) DEFAULT NULL,
-  `notes` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('PLANNED','DONE') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PLANNED',
+  `notes` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('PLANNED','DONE') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PLANNED',
   `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `Task_clientId_fkey` (`clientId`),
   KEY `Task_goalId_fkey` (`goalId`),
   CONSTRAINT `Task_clientId_fkey` FOREIGN KEY (`clientId`) REFERENCES `Client` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `Task_goalId_fkey` FOREIGN KEY (`goalId`) REFERENCES `Goal` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -180,7 +180,7 @@ CREATE TABLE `Task` (
 
 LOCK TABLES `Task` WRITE;
 /*!40000 ALTER TABLE `Task` DISABLE KEYS */;
-INSERT INTO `Task` VALUES (4,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','a','DONE','2025-04-23 20:40:29.261'),(5,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','aa','DONE','2025-04-23 20:44:59.042'),(6,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','c','DONE','2025-04-23 20:51:30.866'),(7,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','d','DONE','2025-04-23 20:51:34.010'),(8,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','f','DONE','2025-04-23 20:52:01.245'),(9,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','h','DONE','2025-04-23 20:53:07.741'),(10,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','ssss','DONE','2025-04-23 20:53:39.240'),(11,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','aaaaa','DONE','2025-04-23 20:56:49.489');
+INSERT INTO `Task` VALUES (4,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','a','DONE','2025-04-23 20:40:29.261'),(5,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','aa','DONE','2025-04-23 20:44:59.042'),(6,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','c','DONE','2025-04-23 20:51:30.866'),(7,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','d','DONE','2025-04-23 20:51:34.010'),(8,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','f','DONE','2025-04-23 20:52:01.245'),(9,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','h','DONE','2025-04-23 20:53:07.741'),(10,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','ssss','DONE','2025-04-23 20:53:39.240'),(11,1,1,'2025-04-23 00:00:00.000','2025-04-23 00:00:00.000','aaaaa','DONE','2025-04-23 20:56:49.489'),(12,1,1,'2025-04-24 00:00:00.000','2025-04-24 00:00:00.000','a w sumie o niczym','DONE','2025-04-24 12:06:02.694');
 /*!40000 ALTER TABLE `Task` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,4 +223,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-23 21:09:31
+-- Dump completed on 2025-04-24 14:18:04

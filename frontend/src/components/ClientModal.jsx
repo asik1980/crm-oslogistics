@@ -95,6 +95,38 @@ const ClientModal = ({
     }
   }
 
+  const handleFetchGus = async () => {
+    const nip = formData.nip?.trim()
+
+    if (!nip || nip.length !== 10) {
+      alert('Podaj poprawny 10-cyfrowy NIP')
+      return
+    }
+
+    try {
+      const res = await axios.post('http://localhost:3000/gus/nip', { nip })
+      const gusData = res.data
+
+      if (!gusData) {
+        alert('Brak danych w GUS dla podanego NIP')
+        return
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        name: gusData.nazwa || '',
+        city: gusData.miejscowosc || '',
+        zipCode: gusData.kodPocztowy || '',
+        address: gusData.ulica
+          ? `${gusData.ulica} ${gusData.nrNieruchomosci || ''}${gusData.nrLokalu ? '/' + gusData.nrLokalu : ''}`
+          : ''
+      }))
+    } catch (err) {
+      console.error('❌ Błąd pobierania z GUS:', err)
+      alert('Błąd połączenia z serwisem GUS')
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (nipExists && mode === 'create') return
@@ -132,7 +164,35 @@ const ClientModal = ({
         )}
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input name="nip" value={formData.nip} onChange={handleChange} placeholder="NIP" className="border p-2" disabled={mode === 'edit'} onBlur={mode === 'create' ? handleNipCheck : undefined} />
+          {mode === 'create' ? (
+            <div className="flex items-center gap-2 col-span-full md:col-span-1">
+              <input
+                name="nip"
+                value={formData.nip}
+                onChange={handleChange}
+                placeholder="NIP"
+                className="border p-2 flex-1"
+                onBlur={handleNipCheck}
+              />
+              <button
+                type="button"
+                onClick={handleFetchGus}
+                className="text-xs bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
+              >
+                GUS
+              </button>
+            </div>
+          ) : (
+            <input
+              name="nip"
+              value={formData.nip}
+              onChange={handleChange}
+              placeholder="NIP"
+              className="border p-2"
+              disabled
+            />
+          )}
+
           <input name="name" value={formData.name} onChange={handleChange} placeholder="Nazwa firmy" className="border p-2" />
           <input name="city" value={formData.city} onChange={handleChange} placeholder="Miasto" className="border p-2" />
           <input name="zipCode" value={formData.zipCode} onChange={handleChange} placeholder="Kod pocztowy" className="border p-2" />
@@ -173,7 +233,7 @@ const ClientModal = ({
             <label><input type="checkbox" name="fromChina" checked={formData.fromChina} onChange={handleChange} /> Z Chin</label>
           </div>
 
-          {/* Osoba kontaktowa (pierwsza) */}
+          {/* Osoba kontaktowa */}
           <div className="col-span-full mt-4 border-t pt-4">
             <h3 className="font-semibold text-md mb-2">Osoba kontaktowa</h3>
             <div className="grid grid-cols-2 gap-2">
