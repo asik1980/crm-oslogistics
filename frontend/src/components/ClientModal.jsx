@@ -1,3 +1,4 @@
+import { API } from '../config'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
@@ -77,7 +78,7 @@ const ClientModal = ({
 
   const handleNipCheck = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/nip/${formData.nip}`)
+      const res = await axios.get(`${API}/nip/${formData.nip}`)
       if (res.data.exists) {
         setNipExists(true)
         setNipInfo(res.data.owner)
@@ -104,7 +105,7 @@ const ClientModal = ({
     }
 
     try {
-      const res = await axios.post('http://localhost:3000/gus/nip', { nip })
+      const res = await axios.post(`${API}/gus/nip`, { nip })
       const gusData = res.data
 
       if (!gusData) {
@@ -136,9 +137,9 @@ const ClientModal = ({
       const headers = { Authorization: `Bearer ${token}` }
 
       if (mode === 'edit') {
-        await axios.put(`http://localhost:3000/clients/${clientId}`, formData, { headers })
+        await axios.put(`${API}/clients/${clientId}`, formData, { headers })
       } else {
-        await axios.post(`http://localhost:3000/clients`, formData, { headers })
+        await axios.post(`${API}/clients`, formData, { headers })
       }
 
       onAdded()

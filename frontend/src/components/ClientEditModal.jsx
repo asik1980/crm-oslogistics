@@ -1,3 +1,4 @@
+import { API } from '../config'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
@@ -17,7 +18,7 @@ const ClientEditModal = ({ open, onClose, client, onSaved }) => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token')
-        const res = await axios.get('http://localhost:3000/users', {
+        const res = await axios.get(`${API}/users`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         setUsers(res.data)
@@ -84,7 +85,7 @@ const ClientEditModal = ({ open, onClose, client, onSaved }) => {
     e.preventDefault()
     try {
       const token = localStorage.getItem('token')
-      await axios.put(`http://localhost:3000/clients/${client.id}`, {
+      await axios.put(`${API}/clients/${client.id}`, {
         ...formData,
         contacts
       }, {

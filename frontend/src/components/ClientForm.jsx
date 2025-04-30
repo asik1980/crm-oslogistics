@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const API_URL = 'http://localhost:3000/clients'
+const API_URL = `${import.meta.env.VITE_API_URL}/clients`
 
 const ClientForm = ({ onAdded, onClose, mode = 'create', clientId = null, initialData = {} }) => {
   const [formData, setFormData] = useState({
@@ -89,7 +89,7 @@ const ClientForm = ({ onAdded, onClose, mode = 'create', clientId = null, initia
     }
   
     try {
-      const res = await axios.post('http://localhost:3000/gus/nip', { nip })
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/gus/nip`, { nip })
       const gusData = res.data
   
       if (!gusData) {

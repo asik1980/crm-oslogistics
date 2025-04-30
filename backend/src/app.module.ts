@@ -11,11 +11,16 @@ import { MailService } from './mail/mail.service'
 import { GoalModule } from './goal/goal.module'
 import { TaskModule } from './task/task.module'
 import { GusModule } from './gus/gus.module'
+import { AppController } from './app.controller' // ✅ dodane
 
 @Module({
   imports: [AuthModule, GoalModule, TaskModule, GusModule],
-  controllers: [ClientController, UserController, NipController],
-
+  controllers: [
+    ClientController,
+    UserController,
+    NipController,
+    AppController, // ✅ dodane
+  ],
   providers: [
     PrismaService,
     ClientService,
@@ -28,3 +33,4 @@ import { GusModule } from './gus/gus.module'
   ],
 })
 export class AppModule {}
+

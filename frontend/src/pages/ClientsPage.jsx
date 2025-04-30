@@ -1,3 +1,4 @@
+import { API } from '../config'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import ClientList from '../components/ClientList'
@@ -27,7 +28,7 @@ const ClientsPage = ({ user }) => {
   }, [filters])
 
   const fetchClients = () => {
-    axios.get('http://localhost:3000/clients', {
+    axios.get(`${import.meta.env.VITE_API_URL}/clients`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       params: filters
     })
@@ -41,7 +42,7 @@ const ClientsPage = ({ user }) => {
   }
 
   const fetchGoals = () => {
-    axios.get('http://localhost:3000/goals', {
+    axios.get(`${API}/goals`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     })
       .then(res => setGoals(res.data))
@@ -51,7 +52,7 @@ const ClientsPage = ({ user }) => {
   }
 
   const fetchUsers = () => {
-    axios.get('http://localhost:3000/users', {
+    axios.get(`${import.meta.env.VITE_API_URL}/clients`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
       .then(res => setUsers(res.data))

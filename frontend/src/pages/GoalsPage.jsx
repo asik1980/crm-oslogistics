@@ -1,3 +1,4 @@
+import { API } from '../config'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
@@ -9,7 +10,7 @@ const GoalsPage = () => {
 
   const fetchGoals = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/goals', {
+      const res = await axios.get(`${API}/goals`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -25,8 +26,7 @@ const GoalsPage = () => {
     if (!trimmed) return
 
     try {
-      await axios.post(
-        'http://localhost:3000/goals',
+      await axios.post(`${API}/goals`,
         { label: trimmed },
         {
           headers: {

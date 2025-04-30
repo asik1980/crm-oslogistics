@@ -14,57 +14,56 @@ model User {
   password  String
   firstName String?
   lastName  String?
-  phone     String?  // ✅ nowość
-  role      Role     @default(HANDLOWIEC) // ✅ zaktualizowana rola
+  phone     String?
+  role      Role     @default(HANDLOWIEC)
   clients   Client[]
 }
 
-enum Role {
-  ADMIN
-  HANDLOWIEC
-}
-
 model Client {
-  id             Int       @id @default(autoincrement())
-  name           String
-  city           String?
-  zipCode        String?
-  address        String?
-  nip       String? @unique
-  website        String?
-  email          String?
-  phone          String?
-  interestedFCL  Boolean   @default(false)
-  interestedLCL  Boolean   @default(false)
-  interestedAIR  Boolean   @default(false)
-  interestedFTL  Boolean   @default(false)
-  interestedRAIL Boolean   @default(false)
-  isImporter     Boolean   @default(false)
-  isExporter     Boolean   @default(false)
-  fromChina      Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  userId         Int
-  status         String @default("DO AKCEPTACJI")
-  user           User      @relation(fields: [userId], references: [id])
-  notes         String?
-  clientClass   String? @default("D") // A, B, C, D
-  daysBetweenTasks Int      @default(1)
-  currentGoalId Int?
+  id               Int       @id @default(autoincrement())
+  name             String
+  createdAt        DateTime  @default(now())
+  address          String?
+  city             String?
+  fromChina        Boolean   @default(false)
+  interestedAIR    Boolean   @default(false)
+  interestedFCL    Boolean   @default(false)
+  interestedLCL    Boolean   @default(false)
+  isExporter       Boolean   @default(false)
+  isImporter       Boolean   @default(false)
+  nip              String?   @unique
+  updatedAt        DateTime  @updatedAt
+  userId           Int
+  website          String?
+  zipCode          String?
+  email            String?
+  phone            String?
+  status           String    @default("DO AKCEPTACJI")
+  interestedFTL    Boolean   @default(false)
+  interestedRAIL   Boolean   @default(false)
+  clientClass      String?   @default("D")
+  notes            String?
+  daysBetweenTasks Int       @default(1)
+  currentGoalId    Int?
+  user             User      @relation(fields: [userId], references: [id])
+  contacts         Contact[]
   tasks            Task[]
-  contacts      Contact[]
+
+  @@index([userId], map: "Client_userId_fkey")
 }
 
 model Contact {
-  id           Int     @id @default(autoincrement())
-  clientId     Int
-  client       Client  @relation(fields: [clientId], references: [id])
-  firstName    String
-  lastName     String
-  position     String?
-  salutation   String?  // zwrot grzecznościowy
-  email        String?
-  phone        String?
+  id         Int     @id @default(autoincrement())
+  clientId   Int
+  firstName  String
+  lastName   String
+  email      String?
+  phone      String?
+  position   String?
+  salutation String?
+  client     Client  @relation(fields: [clientId], references: [id])
+
+  @@index([clientId], map: "Contact_clientId_fkey")
 }
 
 model Goal {
@@ -74,16 +73,24 @@ model Goal {
 }
 
 model Task {
-  id        Int      @id @default(autoincrement())
-  client    Client   @relation(fields: [clientId], references: [id])
+  id        Int        @id @default(autoincrement())
   clientId  Int
-  goal      Goal     @relation(fields: [goalId], references: [id])
   goalId    Int
-  plannedAt DateTime? // opcjonalnie, w przyszłości
-  doneAt    DateTime
+  plannedAt DateTime
+  doneAt    DateTime?
   notes     String?
   status    TaskStatus @default(PLANNED)
   createdAt DateTime   @default(now())
+  client    Client     @relation(fields: [clientId], references: [id])
+  goal      Goal       @relation(fields: [goalId], references: [id])
+
+  @@index([clientId], map: "Task_clientId_fkey")
+  @@index([goalId], map: "Task_goalId_fkey")
+}
+
+enum Role {
+  ADMIN
+  HANDLOWIEC
 }
 
 enum TaskStatus {

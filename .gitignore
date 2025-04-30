@@ -1,7 +1,9 @@
-node_modules/
-dist/
-#.env
-.vscode/
-db/
-*.sock
+node_modules
+dist
+.env
+.env.production
+.env.development
+.idea
+.DS_Store
 *.log
+

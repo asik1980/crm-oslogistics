@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { API } from '../config'
+import React, { useEffect, 
+useState } from 'react'
 
 const TaskCompleteModal = ({ open, onClose, client, onSaved }) => {
   const [notes, setNotes] = useState('')
@@ -20,7 +22,7 @@ const TaskCompleteModal = ({ open, onClose, client, onSaved }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://localhost:3000/tasks', {
+      const response = await fetch(`${API}/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

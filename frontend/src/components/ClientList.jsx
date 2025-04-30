@@ -1,3 +1,4 @@
+import { API } from '../config'
 import React, { useState } from 'react'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
@@ -40,7 +41,7 @@ const ClientList = ({ clients = [], onDelete, onEdit, goals = [] }) => {
   const handleDelete = async (id) => {
     if (confirm('Czy na pewno chcesz usunąć tego klienta?')) {
       try {
-        await axios.delete(`http://localhost:3000/clients/${id}`, {
+        await axios.delete(`${API}/clients/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         onDelete?.()
@@ -52,7 +53,7 @@ const ClientList = ({ clients = [], onDelete, onEdit, goals = [] }) => {
 
   const handleUpdate = async (id, field, value) => {
     try {
-      await axios.put(`http://localhost:3000/clients/${id}`, {
+      await axios.put(`${API}/clients/${id}`, {
         [field]: value
       }, {
         headers: { Authorization: `Bearer ${token}` }
